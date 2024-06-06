@@ -1,0 +1,44 @@
+# yaml-language-server: $schema=https://app.stainlessapi.com/config.schema.json
+
+organization:
+  name: propulsionai
+  docs: https://docs.propulsionai.com
+  contact: dev-feedback@propulsionai.com
+resources:
+  models:
+    methods:
+      run: post /api/v1/{model_id}/run
+targets:
+  node:
+    package_name: propulsionai
+    production_repo: null
+    publish:
+      npm: false
+settings:
+  license: Apache-2.0
+client_settings:
+  opts:
+    bearer_token:
+      type: string
+      auth:
+        security_scheme: bearerAuth
+      read_env: PROPULSIONAI_BEARER_TOKEN
+environments:
+  production: https://api.propulsionhq.com
+query_settings:
+  nested_format: brackets
+  array_format: comma
+readme:
+  example_requests:
+    default:
+      type: request
+      endpoint: post /api/v1/{model_id}/run
+      params: &ref_0
+        model_id: REPLACE_ME
+        messages: REPLACE_ME
+        model: REPLACE_ME
+        stream: REPLACE_ME
+    headline:
+      type: request
+      endpoint: post /api/v1/{model_id}/run
+      params: *ref_0
