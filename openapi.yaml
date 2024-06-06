@@ -113,6 +113,15 @@ paths:
                     type: integer
                   model:
                     type: string
+                  toolCalls:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        function:
+                          type: object
                   choices:
                     type: array
                     items:
