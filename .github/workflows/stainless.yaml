@@ -2,7 +2,7 @@ name: Upload to Stainless
 on:
   push:
     branches:
-      - master
+      - main
 
 jobs:
   upload_to_stainless:
