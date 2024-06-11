@@ -7,11 +7,99 @@ info:
     name: PropulsionAI
 servers:
   - url: https://api.propulsionhq.com
+    description: PropulsionAI Production Server
+tags:
+  - name: dataset
+    description: Dataset operations
+  - name: model
+    description: Model operations
 
 paths:
+  /api/v1/dataset/{dataset_id}/task:
+    post:
+      summary: Create a new dataset task
+      description: This endpoint creates a new task for the dataset with specific columns.
+      tags:
+        - dataset
+      parameters:
+        - name: dataset_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          example: 123
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prompt:
+                  type: string
+                  description: The column name in the dataset containing the prompts.
+                  default: instruction
+                query:
+                  type: string
+                  description: The column name in the dataset containing the queries.
+                  default: input
+                response:
+                  type: string
+                  description: The column name in the dataset containing the responses.
+                  default: output
+                history:
+                  type: string
+                  description: The column name in the dataset containing the histories.
+                  default: None
+                messages:
+                  type: string
+                  description: The column name in the dataset containing the messages.
+                  default: conversations
+                system:
+                  type: string
+                  description: The column name in the dataset containing the system prompts.
+                  default: None
+                tools:
+                  type: string
+                  description: The column name in the dataset containing the tool descriptions.
+                  default: None
+                images:
+                  type: string
+                  description: The column name in the dataset containing the image inputs.
+                  default: None
+                chosen:
+                  type: string
+                  description: The column name in the dataset containing the chosen answers.
+                  default: None
+                rejected:
+                  type: string
+                  description: The column name in the dataset containing the rejected answers.
+                  default: None
+                kto_tag:
+                  type: string
+                  description: The column name in the dataset containing the kto tags.
+                  default: None
+      responses:
+        '200':
+          description: Task created successfully
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Invalid request payload
+        '500':
+          description: Internal server error
   /api/v1/{model_id}/run:
     post:
       summary: Run a model with specified tools and messages.
+      description: This endpoint runs a model with the specified tools and messages.
+      tags:
+        - model
       parameters:
         - name: model_id
           in: path
@@ -119,6 +207,59 @@ components:
       description: Custom bearer token for authorization
 
   schemas:
+    DatasetTaskRequest:
+      type: object
+      properties:
+        dataset_id:
+          type: integer
+        data:
+          type: object
+          properties:
+            prompt:
+              type: string
+              description: The column name in the dataset containing the prompts.
+              default: instruction
+            query:
+              type: string
+              description: The column name in the dataset containing the queries.
+              default: input
+            response:
+              type: string
+              description: The column name in the dataset containing the responses.
+              default: output
+            history:
+              type: string
+              description: The column name in the dataset containing the histories.
+              default: None
+            messages:
+              type: string
+              description: The column name in the dataset containing the messages.
+              default: conversations
+            system:
+              type: string
+              description: The column name in the dataset containing the system prompts.
+              default: None
+            tools:
+              type: string
+              description: The column name in the dataset containing the tool descriptions.
+              default: None
+            images:
+              type: string
+              description: The column name in the dataset containing the image inputs.
+              default: None
+            chosen:
+              type: string
+              description: The column name in the dataset containing the chosen answers.
+              default: None
+            rejected:
+              type: string
+              description: The column name in the dataset containing the rejected answers.
+              default: None
+            kto_tag:
+              type: string
+              description: The column name in the dataset containing the kto tags.
+              default: None
+
     ChatCompletionTool:
       type: object
       properties:
