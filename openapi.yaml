@@ -360,14 +360,12 @@ components:
               type: integer
         toolCalls:
           type: array
-          items:
+          function:
             type: object
             properties:
-              functionName:
+              name:
                 type: string
-              arguments:
-                type: object
-              response:
+              parameters:
                 type: object
 
 security:
