@@ -360,7 +360,7 @@ components:
               type: integer
         toolCalls:
           type: array
-          function:
+          items:
             type: object
             properties:
               name:
