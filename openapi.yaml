@@ -363,10 +363,12 @@ components:
           items:
             type: object
             properties:
-              name:
+              type:
                 type: string
-              parameters:
+                enum: ["function"]
+              function:
                 type: object
+                $ref: "#/components/schemas/FunctionObject"
 
 security:
   - bearerAuth: []
