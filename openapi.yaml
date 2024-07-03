@@ -18,6 +18,8 @@ paths:
   /api/v1/chat/{deployment_tag}:
     post:
       summary: Call a deployment endpoint with specified tools and messages.
+      tags:
+        - model
       parameters:
         - name: deployment_tag
           in: path
@@ -103,7 +105,6 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
-
   /api/v1/dataset/{dataset_id}/task:
     post:
       summary: Create a new dataset task
@@ -137,7 +138,6 @@ paths:
                     example: Invalid request payload
         '500':
           description: Internal server error
-
   /api/v1/{model_id}/run:
     post:
       summary: Run a model with specified tools and messages.
