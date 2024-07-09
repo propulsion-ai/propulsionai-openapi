@@ -91,6 +91,9 @@ paths:
                   description: A list of knowledgebase IDs to use in the model.
                   items:
                     type: string
+                task_id:
+                  type: string
+                  description: Optional task ID associated with the request.
               required:
                 - messages
                 - model
@@ -171,7 +174,68 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ModelRunRequest"
+              type: object
+              properties:
+                tools:
+                  type: array
+                  description: >
+                    A list of tools the model may call. Currently, only functions are supported as a tool.
+                    Use this to provide a list of functions the model may generate JSON inputs for. A max of 128 functions are supported.
+                  items:
+                    $ref: "#/components/schemas/ChatCompletionTool"
+                messages:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                        enum: [system, user, assistant, tool]
+                      content:
+                        type: string
+                model:
+                  type: string
+                stream:
+                  type: boolean
+                temperature:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                  default: 1
+                  nullable: true
+                  description: An alternative to sampling with temperature, called nucleus sampling.
+                top_p:
+                  type: number
+                  minimum: 0
+                  maximum: 1
+                  default: 1
+                  nullable: true
+                  description: An alternative to sampling with temperature, called nucleus sampling.
+                n:
+                  type: integer
+                  minimum: 1
+                  maximum: 128
+                  default: 1
+                  nullable: true
+                  description: How many chat completion choices to generate for each input message.
+                max_tokens:
+                  type: integer
+                  nullable: true
+                  description: The maximum number of tokens that can be generated in the chat completion.
+                tool_choice:
+                  $ref: "#/components/schemas/ChatCompletionToolChoiceOption"
+                knowledgebases:
+                  type: array
+                  description: A list of knowledgebase IDs to use in the model.
+                  items:
+                    type: string
+                task_id:
+                  type: string
+                  description: Optional task ID associated with the request.
+              required:
+                - messages
+                - model
+                - stream
       responses:
         '200':
           description: Successful response
@@ -344,6 +408,9 @@ components:
           description: A list of knowledgebase IDs to use in the model.
           items:
             type: string
+        task_id:
+          type: string
+          description: Optional task ID associated with the request.
       required:
         - messages
         - model
