@@ -114,7 +114,7 @@ paths:
               schema:
                 type: string
                 format: binary
-                description: Stream of server-sent events. Each event is prefixed with "data: " and contains a JSON payload.
+                description: "Stream of server-sent events. Each event is prefixed with 'data: ' and contains a JSON payload."
         '400':
           description: Bad Request
         '401':
