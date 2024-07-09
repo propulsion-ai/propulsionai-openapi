@@ -18,8 +18,6 @@ paths:
   /api/v1/chat/{deployment_tag}:
     post:
       summary: Call a deployment endpoint with specified tools and messages.
-      tags:
-        - model
       parameters:
         - name: deployment_tag
           in: path
@@ -88,6 +86,11 @@ paths:
                   description: The maximum number of tokens that can be generated in the chat completion.
                 tool_choice:
                   $ref: "#/components/schemas/ChatCompletionToolChoiceOption"
+                knowledgebases:
+                  type: array
+                  description: A list of knowledgebase IDs to use in the model.
+                  items:
+                    type: string
               required:
                 - messages
                 - model
@@ -95,6 +98,11 @@ paths:
       responses:
         '200':
           description: Successful response
+          headers:
+            X-TASK-ID:
+              description: The ID of the created task.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -105,6 +113,7 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
+
   /api/v1/dataset/{dataset_id}/task:
     post:
       summary: Create a new dataset task
@@ -138,6 +147,7 @@ paths:
                     example: Invalid request payload
         '500':
           description: Internal server error
+
   /api/v1/{model_id}/run:
     post:
       summary: Run a model with specified tools and messages.
@@ -165,6 +175,11 @@ paths:
       responses:
         '200':
           description: Successful response
+          headers:
+            X-TASK-ID:
+              description: The ID of the created task.
+              schema:
+                type: string
           content:
             application/json:
               schema:
@@ -324,6 +339,11 @@ components:
           description: The maximum number of tokens that can be generated in the chat completion.
         tool_choice:
           $ref: "#/components/schemas/ChatCompletionToolChoiceOption"
+        knowledgebases:
+          type: array
+          description: A list of knowledgebase IDs to use in the model.
+          items:
+            type: string
       required:
         - messages
         - model
