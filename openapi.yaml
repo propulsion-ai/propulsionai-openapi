@@ -110,6 +110,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ModelRunResponse"
+            text/event-stream:
+              schema:
+                type: string
+                format: binary
+                description: Stream of server-sent events. Each event is prefixed with "data: " and contains a JSON payload.
         '400':
           description: Bad Request
         '401':
@@ -153,7 +158,7 @@ paths:
 
   /api/v1/{model_id}/run:
     post:
-      summary: Run a model with specified tools and messages.
+      summary: (Deprecated) Run a model with specified tools and messages.
       tags:
         - model
       parameters:
@@ -460,6 +465,42 @@ components:
                 enum: ["function"]
               function:
                 $ref: "#/resources/models/FunctionObject"
+    StreamingModelRunResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        created:
+          type: integer
+        model:
+          type: string
+        choices:
+          type: array
+          items:
+            type: object
+            properties:
+              delta:
+                type: object
+                properties:
+                  role:
+                    type: string
+                  content:
+                    type: string
+              index:
+                type: integer
+              finish_reason:
+                type: string
+        usage:
+          type: object
+          properties:
+            prompt_tokens:
+              type: integer
+            completion_tokens:
+              type: integer
+            total_tokens:
+              type: integer
 
 resources:
   models:
