@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.0.1
 info:
   title: PropulsionAI API
   description: API for interacting with PropulsionAI models and tools.
@@ -14,10 +14,12 @@ tags:
 paths:
   /chat/completions:
     post:
+      security:
+        - apiKeyAuth: []
       summary: Call a deployment endpoint with specified tools and messages.
       operationId: createChatCompletion
       tags:
-          - Chat
+        - Chat
       requestBody:
         required: true
         content:
@@ -52,9 +54,12 @@ paths:
 components:
   securitySchemes:
     bearerAuth:
-      type: http
-      scheme: bearer
-
+      type: apiKey
+      description: API key generated from PropulsionAI Console
+      name: apiKeyAuth
+      in: header
+      scheme: http
+      bearerFormat: bearer
   schemas:
     ChatRequest:
       type: object
@@ -91,7 +96,6 @@ components:
       required:
         - messages
         - deployment
-
     Message:
       type: object
       properties:
@@ -100,7 +104,9 @@ components:
           enum: [system, user, assistant, tool]
         content:
           type: string
-
+      required:
+        - role
+        - content
     ChatCompletionTool:
       type: object
       properties:
@@ -112,7 +118,6 @@ components:
       required:
         - type
         - function
-
     FunctionObject:
       type: object
       properties:
@@ -126,13 +131,11 @@ components:
           additionalProperties: true
       required:
         - name
-
     ChatCompletionToolChoiceOption:
       oneOf:
         - type: string
           enum: [none, auto, required]
         - $ref: '#/components/schemas/ChatCompletionNamedToolChoice'
-
     ChatCompletionNamedToolChoice:
       type: object
       properties:
@@ -144,26 +147,22 @@ components:
       required:
         - type
         - function
-
     Temperature:
       type: number
       minimum: 0
       maximum: 1
       default: 0.4
-
     TopP:
       type: number
       minimum: 0
       maximum: 1
       default: 0.5
       description: Probability threshold for token selection in text generation, controlling output randomness.
-
     N:
       type: integer
       minimum: 1
       maximum: 128
       default: 1
-
     ModelRunResponse:
       type: object
       properties:
@@ -185,7 +184,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ToolCall'
-
     Choice:
       type: object
       properties:
@@ -193,7 +191,6 @@ components:
           type: integer
         message:
           $ref: '#/components/schemas/Message'
-
     Usage:
       type: object
       properties:
@@ -203,7 +200,6 @@ components:
           type: integer
         total_tokens:
           type: integer
-
     ToolCall:
       type: object
       properties:
@@ -212,6 +208,5 @@ components:
           enum: ['function']
         function:
           $ref: '#/components/schemas/FunctionObject'
-
 security:
   - bearerAuth: []
