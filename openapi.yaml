@@ -8,102 +8,22 @@ info:
 servers:
   - url: https://api.propulsionhq.com
     description: PropulsionAI Production Server
-tags:
-  - name: dataset
-    description: Dataset operations
-  - name: model
-    description: Model operations
 
 paths:
-  /api/v1/chat/{deployment_tag}:
+  /api/v1/chat:
     post:
       summary: Call a deployment endpoint with specified tools and messages.
-      parameters:
-        - name: deployment_tag
-          in: path
-          required: true
-          schema:
-            type: string
-          description: The ID of the model to run.
-        - name: wait
-          in: query
-          schema:
-            type: boolean
-            default: true
-          description: Whether to wait for the response or not.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                tools:
-                  type: array
-                  description: >
-                    A list of tools the model may call. Currently, only functions are supported as a tool.
-                    Use this to provide a list of functions the model may generate JSON inputs for. A max of 128 functions are supported.
-                  items:
-                    $ref: "#/components/schemas/ChatCompletionTool"
-                messages:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      role:
-                        type: string
-                        enum: [system, user, assistant, tool]
-                      content:
-                        type: string
-                model:
-                  type: string
-                stream:
-                  type: boolean
-                temperature:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-                  default: 1
-                  nullable: true
-                  description: An alternative to sampling with temperature, called nucleus sampling.
-                top_p:
-                  type: number
-                  minimum: 0
-                  maximum: 1
-                  default: 1
-                  nullable: true
-                  description: An alternative to sampling with temperature, called nucleus sampling.
-                n:
-                  type: integer
-                  minimum: 1
-                  maximum: 128
-                  default: 1
-                  nullable: true
-                  description: How many chat completion choices to generate for each input message.
-                max_tokens:
-                  type: integer
-                  nullable: true
-                  description: The maximum number of tokens that can be generated in the chat completion.
-                tool_choice:
-                  $ref: "#/components/schemas/ChatCompletionToolChoiceOption"
-                knowledgebases:
-                  type: array
-                  description: A list of knowledgebase IDs to use in the model.
-                  items:
-                    type: string
-                task_id:
-                  type: string
-                  description: Optional task ID associated with the request.
-              required:
-                - messages
-                - model
-                - stream
+              $ref: '#/components/schemas/ChatRequest'
       responses:
         '200':
           description: Successful response
           headers:
             X-TASK-ID:
-              description: The ID of the created task.
               schema:
                 type: string
           content:
@@ -114,145 +34,6 @@ paths:
               schema:
                 type: string
                 format: binary
-                description: "Stream of server-sent events. Each event is prefixed with 'data: ' and contains a JSON payload."
-        '400':
-          description: Bad Request
-        '401':
-          description: Unauthorized
-        '500':
-          description: Internal Server Error
-
-  /api/v1/dataset/{dataset_id}/task:
-    post:
-      summary: Create a new dataset task
-      tags:
-        - dataset
-      parameters:
-        - name: dataset_id
-          in: path
-          required: true
-          schema:
-            type: integer
-          example: 123
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/DatasetTaskRequest"
-      responses:
-        '200':
-          description: Task created successfully
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Invalid request payload
-        '500':
-          description: Internal server error
-
-  /api/v1/{model_id}/run:
-    post:
-      summary: (Deprecated) Run a model with specified tools and messages.
-      tags:
-        - model
-      parameters:
-        - name: model_id
-          in: path
-          required: true
-          schema:
-            type: string
-          description: The ID of the model to run.
-        - name: wait
-          in: query
-          schema:
-            type: boolean
-            default: true
-          description: Whether to wait for the response or not.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                tools:
-                  type: array
-                  description: >
-                    A list of tools the model may call. Currently, only functions are supported as a tool.
-                    Use this to provide a list of functions the model may generate JSON inputs for. A max of 128 functions are supported.
-                  items:
-                    $ref: "#/components/schemas/ChatCompletionTool"
-                messages:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      role:
-                        type: string
-                        enum: [system, user, assistant, tool]
-                      content:
-                        type: string
-                model:
-                  type: string
-                stream:
-                  type: boolean
-                temperature:
-                  type: number
-                  minimum: 0
-                  maximum: 2
-                  default: 1
-                  nullable: true
-                  description: An alternative to sampling with temperature, called nucleus sampling.
-                top_p:
-                  type: number
-                  minimum: 0
-                  maximum: 1
-                  default: 1
-                  nullable: true
-                  description: An alternative to sampling with temperature, called nucleus sampling.
-                n:
-                  type: integer
-                  minimum: 1
-                  maximum: 128
-                  default: 1
-                  nullable: true
-                  description: How many chat completion choices to generate for each input message.
-                max_tokens:
-                  type: integer
-                  nullable: true
-                  description: The maximum number of tokens that can be generated in the chat completion.
-                tool_choice:
-                  $ref: "#/components/schemas/ChatCompletionToolChoiceOption"
-                knowledgebases:
-                  type: array
-                  description: A list of knowledgebase IDs to use in the model.
-                  items:
-                    type: string
-                task_id:
-                  type: string
-                  description: Optional task ID associated with the request.
-              required:
-                - messages
-                - model
-                - stream
-      responses:
-        '200':
-          description: Successful response
-          headers:
-            X-TASK-ID:
-              description: The ID of the created task.
-              schema:
-                type: string
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/ModelRunResponse"
         '400':
           description: Bad Request
         '401':
@@ -265,56 +46,52 @@ components:
     bearerAuth:
       type: http
       scheme: bearer
-      description: Custom bearer token for authorization
 
   schemas:
-    DatasetTaskRequest:
+    ChatRequest:
       type: object
       properties:
-        prompt:
-          type: string
-          description: The column name in the dataset containing the prompts.
-          default: instruction
-        query:
-          type: string
-          description: The column name in the dataset containing the queries.
-          default: input
-        response:
-          type: string
-          description: The column name in the dataset containing the responses.
-          default: output
-        history:
-          type: string
-          description: The column name in the dataset containing the histories.
-          default: None
-        messages:
-          type: string
-          description: The column name in the dataset containing the messages.
-          default: conversations
-        system:
-          type: string
-          description: The column name in the dataset containing the system prompts.
-          default: None
         tools:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChatCompletionTool"
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/Message"
+        deployment:
           type: string
-          description: The column name in the dataset containing the tool descriptions.
-          default: None
-        images:
+        stream:
+          type: boolean
+          default: false
+        temperature:
+          $ref: "#/components/schemas/Temperature"
+        top_p:
+          $ref: "#/components/schemas/TopP"
+        n:
+          $ref: "#/components/schemas/N"
+        max_tokens:
+          type: integer
+        tool_choice:
+          $ref: "#/components/schemas/ChatCompletionToolChoiceOption"
+        knowledgebases:
+          type: array
+          items:
+            type: string
+        task_id:
           type: string
-          description: The column name in the dataset containing the image inputs.
-          default: None
-        chosen:
+      required:
+        - messages
+        - deployment
+
+    Message:
+      type: object
+      properties:
+        role:
           type: string
-          description: The column name in the dataset containing the chosen answers.
-          default: None
-        rejected:
+          enum: [system, user, assistant, tool]
+        content:
           type: string
-          description: The column name in the dataset containing the rejected answers.
-          default: None
-        kto_tag:
-          type: string
-          description: The column name in the dataset containing the kto tags.
-          default: None
 
     ChatCompletionTool:
       type: object
@@ -322,28 +99,31 @@ components:
         type:
           type: string
           enum: ["function"]
-          description: The type of the tool. Currently, only `function` is supported.
         function:
-          $ref: "#/resources/models/FunctionObject"
+          $ref: "#/components/schemas/FunctionObject"
       required:
         - type
         - function
 
+    FunctionObject:
+      type: object
+      properties:
+        description:
+          type: string
+        name:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]{1,64}$
+        parameters:
+          type: object
+          additionalProperties: true
+      required:
+        - name
+
     ChatCompletionToolChoiceOption:
       oneOf:
         - type: string
-          description: |
-            Controls which (if any) tool is called by the model.
-            `none` means the model will not call any tool and instead generates a message.
-            `auto` means the model can pick between generating a message or calling one or more tools.
-            `required` means the model must call one or more tools.
           enum: [none, auto, required]
         - $ref: "#/components/schemas/ChatCompletionNamedToolChoice"
-
-    FunctionParameters:
-      type: object
-      description: "The parameters the functions accepts, described as a JSON Schema object."
-      additionalProperties: true
 
     ChatCompletionNamedToolChoice:
       type: object
@@ -352,74 +132,29 @@ components:
           type: string
           enum: ["function"]
         function:
-          $ref: "#/resources/models/FunctionObject"
+          $ref: "#/components/schemas/FunctionObject"
       required:
         - type
         - function
 
-    ModelRunRequest:
-      type: object
-      properties:
-        tools:
-          type: array
-          description: >
-            A list of tools the model may call. Currently, only functions are supported as a tool.
-            Use this to provide a list of functions the model may generate JSON inputs for. A max of 128 functions are supported.
-          items:
-            $ref: "#/components/schemas/ChatCompletionTool"
-        messages:
-          type: array
-          items:
-            type: object
-            properties:
-              role:
-                type: string
-                enum: [system, user, assistant, tool]
-              content:
-                type: string
-        model:
-          type: string
-        stream:
-          type: boolean
-        temperature:
-          type: number
-          minimum: 0
-          maximum: 2
-          default: 1
-          nullable: true
-          description: An alternative to sampling with temperature, called nucleus sampling.
-        top_p:
-          type: number
-          minimum: 0
-          maximum: 1
-          default: 1
-          nullable: true
-          description: An alternative to sampling with temperature, called nucleus sampling.
-        n:
-          type: integer
-          minimum: 1
-          maximum: 128
-          default: 1
-          nullable: true
-          description: How many chat completion choices to generate for each input message.
-        max_tokens:
-          type: integer
-          nullable: true
-          description: The maximum number of tokens that can be generated in the chat completion.
-        tool_choice:
-          $ref: "#/components/schemas/ChatCompletionToolChoiceOption"
-        knowledgebases:
-          type: array
-          description: A list of knowledgebase IDs to use in the model.
-          items:
-            type: string
-        task_id:
-          type: string
-          description: Optional task ID associated with the request.
-      required:
-        - messages
-        - model
-        - stream
+    Temperature:
+      type: number
+      minimum: 0
+      maximum: 1
+      default: 0.4
+
+    TopP:
+      type: number
+      minimum: 0
+      maximum: 1
+      default: 0.5
+      description: Probability threshold for token selection in text generation, controlling output randomness.
+
+    N:
+      type: integer
+      minimum: 1
+      maximum: 128
+      default: 1
 
     ModelRunResponse:
       type: object
@@ -435,88 +170,40 @@ components:
         choices:
           type: array
           items:
-            type: object
-            properties:
-              index:
-                type: integer
-              message:
-                type: object
-                properties:
-                  role:
-                    type: string
-                  content:
-                    type: string
+            $ref: "#/components/schemas/Choice"
         usage:
-          type: object
-          properties:
-            prompt_tokens:
-              type: integer
-            completion_tokens:
-              type: integer
-            total_tokens:
-              type: integer
-        toolCalls:
+          $ref: "#/components/schemas/Usage"
+        tool_calls:
           type: array
           items:
-            type: object
-            properties:
-              type:
-                type: string
-                enum: ["function"]
-              function:
-                $ref: "#/resources/models/FunctionObject"
-    StreamingModelRunResponse:
-      type: object
-      properties:
-        id:
-          type: string
-        object:
-          type: string
-        created:
-          type: integer
-        model:
-          type: string
-        choices:
-          type: array
-          items:
-            type: object
-            properties:
-              delta:
-                type: object
-                properties:
-                  role:
-                    type: string
-                  content:
-                    type: string
-              index:
-                type: integer
-              finish_reason:
-                type: string
-        usage:
-          type: object
-          properties:
-            prompt_tokens:
-              type: integer
-            completion_tokens:
-              type: integer
-            total_tokens:
-              type: integer
+            $ref: "#/components/schemas/ToolCall"
 
-resources:
-  models:
-    FunctionObject:
+    Choice:
       type: object
       properties:
-        description:
+        index:
+          type: integer
+        message:
+          $ref: "#/components/schemas/Message"
+
+    Usage:
+      type: object
+      properties:
+        prompt_tokens:
+          type: integer
+        completion_tokens:
+          type: integer
+        total_tokens:
+          type: integer
+
+    ToolCall:
+      type: object
+      properties:
+        type:
           type: string
-          description: A description of what the function does, used by the model to choose when and how to call the function.
-        name:
-          type: string
-          description: The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64.
-        parameters:
-          $ref: "#/components/schemas/FunctionParameters"
-      required:
-        - name
+          enum: ["function"]
+        function:
+          $ref: "#/components/schemas/FunctionObject"
 
 security:
   - bearerAuth: []
