@@ -6,11 +6,11 @@ info:
   contact:
     name: PropulsionAI
 servers:
-  - url: https://api.propulsionhq.com
+  - url: https://api.propulsionhq.com/api/v1
     description: PropulsionAI Production Server
 
 paths:
-  /api/v1/chat:
+  /chat:
     post:
       summary: Call a deployment endpoint with specified tools and messages.
       requestBody:
