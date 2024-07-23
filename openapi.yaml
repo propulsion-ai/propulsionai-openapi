@@ -2,17 +2,22 @@ openapi: 3.0.3
 info:
   title: PropulsionAI API
   description: API for interacting with PropulsionAI models and tools.
-  version: 1.0.0
+  version: 1.1.0
   contact:
-    name: PropulsionAI
+    name: PropulsionAI Support
 servers:
   - url: https://api.propulsionhq.com/api/v1
     description: PropulsionAI Production Server
-
+tags:
+  - name: Chat
+    description: Given a list of messages comprising a conversation, the model will return a response.
 paths:
-  /chat:
+  /chat/completions:
     post:
       summary: Call a deployment endpoint with specified tools and messages.
+      operationId: createChatCompletion
+      tags:
+          - Chat
       requestBody:
         required: true
         content:
@@ -32,7 +37,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ModelRunResponse"
+                $ref: '#/components/schemas/ModelRunResponse'
             text/event-stream:
               schema:
                 type: string
@@ -57,26 +62,26 @@ components:
         tools:
           type: array
           items:
-            $ref: "#/components/schemas/ChatCompletionTool"
+            $ref: '#/components/schemas/ChatCompletionTool'
         messages:
           type: array
           items:
-            $ref: "#/components/schemas/Message"
+            $ref: '#/components/schemas/Message'
         deployment:
           type: string
         stream:
           type: boolean
           default: false
         temperature:
-          $ref: "#/components/schemas/Temperature"
+          $ref: '#/components/schemas/Temperature'
         top_p:
-          $ref: "#/components/schemas/TopP"
+          $ref: '#/components/schemas/TopP'
         n:
-          $ref: "#/components/schemas/N"
+          $ref: '#/components/schemas/N'
         max_tokens:
           type: integer
         tool_choice:
-          $ref: "#/components/schemas/ChatCompletionToolChoiceOption"
+          $ref: '#/components/schemas/ChatCompletionToolChoiceOption'
         knowledgebases:
           type: array
           items:
@@ -101,9 +106,9 @@ components:
       properties:
         type:
           type: string
-          enum: ["function"]
+          enum: ['function']
         function:
-          $ref: "#/components/schemas/FunctionObject"
+          $ref: '#/components/schemas/FunctionObject'
       required:
         - type
         - function
@@ -126,16 +131,16 @@ components:
       oneOf:
         - type: string
           enum: [none, auto, required]
-        - $ref: "#/components/schemas/ChatCompletionNamedToolChoice"
+        - $ref: '#/components/schemas/ChatCompletionNamedToolChoice'
 
     ChatCompletionNamedToolChoice:
       type: object
       properties:
         type:
           type: string
-          enum: ["function"]
+          enum: ['function']
         function:
-          $ref: "#/components/schemas/FunctionObject"
+          $ref: '#/components/schemas/FunctionObject'
       required:
         - type
         - function
@@ -173,13 +178,13 @@ components:
         choices:
           type: array
           items:
-            $ref: "#/components/schemas/Choice"
+            $ref: '#/components/schemas/Choice'
         usage:
-          $ref: "#/components/schemas/Usage"
+          $ref: '#/components/schemas/Usage'
         tool_calls:
           type: array
           items:
-            $ref: "#/components/schemas/ToolCall"
+            $ref: '#/components/schemas/ToolCall'
 
     Choice:
       type: object
@@ -187,7 +192,7 @@ components:
         index:
           type: integer
         message:
-          $ref: "#/components/schemas/Message"
+          $ref: '#/components/schemas/Message'
 
     Usage:
       type: object
@@ -204,9 +209,9 @@ components:
       properties:
         type:
           type: string
-          enum: ["function"]
+          enum: ['function']
         function:
-          $ref: "#/components/schemas/FunctionObject"
+          $ref: '#/components/schemas/FunctionObject'
 
 security:
   - bearerAuth: []
