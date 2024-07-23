@@ -15,7 +15,7 @@ paths:
   /chat/completions:
     post:
       security:
-        - apiKeyAuth: []
+        - bearerAuth: []
       summary: Call a deployment endpoint with specified tools and messages.
       operationId: createChatCompletion
       tags:
@@ -56,7 +56,7 @@ components:
     bearerAuth:
       type: apiKey
       description: API key generated from PropulsionAI Console
-      name: apiKeyAuth
+      name: bearerAuth
       in: header
       scheme: http
       bearerFormat: bearer
