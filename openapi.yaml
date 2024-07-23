@@ -26,6 +26,9 @@ paths:
             X-TASK-ID:
               schema:
                 type: string
+            X-POLLING-ID:
+              schema:
+                type: string
           content:
             application/json:
               schema:
