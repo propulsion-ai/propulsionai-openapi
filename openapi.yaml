@@ -54,12 +54,9 @@ paths:
 components:
   securitySchemes:
     bearerAuth:
-      type: apiKey
+      type: http
       description: API key generated from PropulsionAI Console
-      name: bearerAuth
-      in: header
-      scheme: http
-      bearerFormat: bearer
+      scheme: bearer
   schemas:
     ChatRequest:
       type: object
