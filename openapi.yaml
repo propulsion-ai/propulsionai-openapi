@@ -8,6 +8,8 @@ info:
     email: dev-support@propulsionhq.com
 servers:
   - url: https://api.propulsionhq.com/api/v1
+    description: PropulsionAI Production Server (Deprecated)
+  - url: https://api.propulsionhq.com/api/v2
     description: PropulsionAI Production Server
 
 tags:
