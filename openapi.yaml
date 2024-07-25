@@ -131,6 +131,7 @@ components:
           nullable: true
         tools:
           type: array
+          nullable: true
           items:
             $ref: '#/components/schemas/ChatCompletionTool'
         chosen:
@@ -147,6 +148,7 @@ components:
           nullable: true
         history:
           type: array
+          nullable: true
           items:
             type: array
             items:
