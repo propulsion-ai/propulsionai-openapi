@@ -43,7 +43,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ModelRunResponse'
+                $ref: '#/components/schemas/ChatCompletionResponse'
             text/event-stream:
               schema:
                 type: string
@@ -127,12 +127,12 @@ components:
           type: string
           enum: ['function']
         function:
-          $ref: '#/components/schemas/FunctionObject'
+          $ref: '#/components/schemas/FunctionRequestObject'
       required:
         - type
         - function
 
-    FunctionObject:
+    FunctionRequestObject:
       type: object
       properties:
         description:
@@ -141,6 +141,20 @@ components:
           type: string
           pattern: ^[a-zA-Z0-9_-]{1,64}$
         parameters:
+          type: object
+          additionalProperties: true
+      required:
+        - name
+    
+    FunctionResponseObject:
+      type: object
+      properties:
+        description:
+          type: string
+        name:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]{1,64}$
+        arguments:
           type: object
           additionalProperties: true
       required:
@@ -159,7 +173,7 @@ components:
           type: string
           enum: ['function']
         function:
-          $ref: '#/components/schemas/FunctionObject'
+          $ref: '#/components/schemas/FunctionRequestObject'
       required:
         - type
         - function
@@ -183,7 +197,7 @@ components:
       maximum: 128
       default: 1
 
-    ModelRunResponse:
+    ChatCompletionResponse:
       type: object
       properties:
         id:
@@ -228,7 +242,7 @@ components:
           type: string
           enum: ['function']
         function:
-          $ref: '#/components/schemas/FunctionObject'
+          $ref: '#/components/schemas/FunctionResponseObject'
 
 security:
   - bearerAuth: []
