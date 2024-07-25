@@ -7,16 +7,69 @@ info:
     name: PropulsionAI Support Team
     email: dev-support@propulsionhq.com
 servers:
-  - url: https://api.propulsionhq.com/api/v1
-    description: PropulsionAI Production Server (Deprecated)
   - url: https://api.propulsionhq.com/api/v2
     description: PropulsionAI Production Server
 
 tags:
   - name: Chat
-    description: Given a list of messages comprising a conversation, the model will return a response.
+    description: Given a list of messages comprising a conversation, the deployment will return a response.
+  - name: Dataset
+    description: Retrieve and manage datasets.
 
 paths:
+  /dataset:
+    post:
+      summary: Creates a new dataset.
+      security:
+        - bearerAuth: []
+      tags:
+        - Dataset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatasetCreateRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatasetCreateResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /dataset/record:
+    post:
+      summary: Creates a new record in a dataset.
+      security:
+        - bearerAuth: []
+      tags:
+        - Dataset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatasetRecordCreateRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatasetRecordCreateResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+
   /chat/completions:
     post:
       summary: Call a deployment endpoint with specified tools and messages.
@@ -62,6 +115,113 @@ components:
       scheme: bearer
 
   schemas:
+    DatasetRecordCreateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        task_id:
+          type: string
+
+    DatasetRecordDataObject:
+      type: object
+      properties:
+        query:
+          type: string
+          nullable: true
+        tools:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatCompletionTool'
+        chosen:
+          type: string
+          nullable: true
+        images:
+          type: string
+          nullable: true
+        prompt:
+          type: string
+          nullable: true
+        system:
+          type: string
+          nullable: true
+        history:
+          type: array
+          items:
+            type: array
+            items:
+              type: string
+        kto_tag:
+          type: string
+          nullable: true
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestMessage'
+        rejected:
+          type: string
+          nullable: true
+        response:
+          type: string
+          nullable: true
+        
+    DatasetRecordCreateRequest:
+      type: object
+      properties:
+        dataset_id:
+          type: number
+        data:
+          $ref: '#/components/schemas/DatasetRecordDataObject'
+      required:
+        - dataset_id
+        - data
+
+    DatasetCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        settings:
+          type: object
+          additionalProperties: true
+        metadata:
+          type: object
+          additionalProperties: true
+      required:
+        - name
+
+    DatasetCreateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        dataset:
+          $ref: '#/components/schemas/DatasetCreateResponseObject'
+          
+    DatasetCreateResponseObject:
+      type: object
+      properties:
+        id:
+          type: number
+        project_id:
+          type: number
+        name:
+          type: string
+        description:
+          type: string
+        settings:
+          type: object
+          additionalProperties: true
+        metadata:
+          type: object
+          additionalProperties: true
+        created:
+          type: integer
+        updated:
+          type: integer
+
     ChatRequest:
       type: object
       properties:
