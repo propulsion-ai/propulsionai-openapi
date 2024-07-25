@@ -43,9 +43,9 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
-  /dataset/record:
+  /dataset/item:
     post:
-      summary: Creates a new record in a dataset.
+      summary: Creates a new item in a dataset.
       security:
         - bearerAuth: []
       tags:
@@ -55,14 +55,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DatasetRecordCreateRequest'
+              $ref: '#/components/schemas/DatasetItemCreateRequest'
       responses:
         '200':
           description: Successful response
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DatasetRecordCreateResponse'
+                $ref: '#/components/schemas/DatasetItemCreateResponse'
         '400':
           description: Bad Request
         '401':
@@ -115,7 +115,7 @@ components:
       scheme: bearer
 
   schemas:
-    DatasetRecordCreateResponse:
+    DatasetItemCreateResponse:
       type: object
       properties:
         message:
@@ -123,7 +123,7 @@ components:
         task_id:
           type: string
 
-    DatasetRecordDataObject:
+    DatasetItemDataObject:
       type: object
       properties:
         query:
@@ -165,13 +165,13 @@ components:
           type: string
           nullable: true
         
-    DatasetRecordCreateRequest:
+    DatasetItemCreateRequest:
       type: object
       properties:
         dataset_id:
           type: number
         data:
-          $ref: '#/components/schemas/DatasetRecordDataObject'
+          $ref: '#/components/schemas/DatasetItemDataObject'
       required:
         - dataset_id
         - data
