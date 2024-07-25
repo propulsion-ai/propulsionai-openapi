@@ -72,7 +72,7 @@ components:
         messages:
           type: array
           items:
-            $ref: '#/components/schemas/Message'
+            $ref: '#/components/schemas/RequestMessage'
         deployment:
           type: string
         stream:
@@ -98,7 +98,7 @@ components:
         - messages
         - deployment
 
-    Message:
+    RequestMessage:
       type: object
       properties:
         role:
@@ -106,6 +106,19 @@ components:
           enum: [system, user, assistant, tool]
         content:
           type: string
+    
+    ResponseMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [system, user, assistant, tool]
+        content:
+          type: string
+        tool_calls:
+          type: array
+          items:
+            $ref: '#/components/schemas/ToolCall'
 
     ChatCompletionTool:
       type: object
@@ -181,16 +194,14 @@ components:
           type: integer
         model:
           type: string
+        task_id:
+          type: string
         choices:
           type: array
           items:
             $ref: '#/components/schemas/Choice'
         usage:
           $ref: '#/components/schemas/Usage'
-        tool_calls:
-          type: array
-          items:
-            $ref: '#/components/schemas/ToolCall'
 
     Choice:
       type: object
@@ -198,7 +209,7 @@ components:
         index:
           type: integer
         message:
-          $ref: '#/components/schemas/Message'
+          $ref: '#/components/schemas/ResponseMessage'
 
     Usage:
       type: object
