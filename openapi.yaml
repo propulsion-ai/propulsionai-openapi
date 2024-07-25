@@ -120,7 +120,7 @@ components:
       properties:
         message:
           type: string
-        task_id:
+        id:
           type: string
 
     DatasetItemDataObject:
@@ -199,6 +199,8 @@ components:
       properties:
         message:
           type: string
+        id:
+          type: number
         dataset:
           $ref: '#/components/schemas/DatasetCreateResponseObject'
           
