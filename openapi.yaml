@@ -249,7 +249,7 @@ components:
         message:
           type: string
         id:
-          type: string
+          type: number
 
     DatasetItemCreateResponse:
       type: object
