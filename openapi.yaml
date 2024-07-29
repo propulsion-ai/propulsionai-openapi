@@ -217,8 +217,6 @@ components:
     KnowledgebaseCreateRequest:
       type: object
       properties:
-        project_id:
-          type: number
         tags:
           type: string
         name:
@@ -226,7 +224,6 @@ components:
         description:
           type: string
       required:
-        - project_id
         - name
         - tags
     
