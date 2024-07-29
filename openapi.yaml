@@ -15,8 +15,99 @@ tags:
     description: Given a list of messages comprising a conversation, the deployment will return a response.
   - name: Dataset
     description: Retrieve and manage datasets.
+  - name: Knowledgebase
+    description: Create and manage knowledgebases.
 
 paths:
+  /knowledgebase:
+    post:
+      summary: Creates a new knowledgebase.
+      security:
+        - bearerAuth: []
+      tags:
+        - Knowledgebase
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgebaseCreateRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgebaseCreateResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /knowledgebase/{knowledgebase_id}/file:
+    post:
+      summary: Uploads a file to a knowledgebase.
+      security:
+        - bearerAuth: []
+      tags:
+        - Knowledgebase
+      parameters:
+        - in: path
+          name: knowledgebase_id
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/KnowledgebaseFileUploadRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgebaseFileUploadResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /knowledgebase/{knowledgebase_id}/file/{file_id}:
+    delete:
+      summary: Deletes a file from a knowledgebase.
+      security:
+        - bearerAuth: []
+      tags:
+        - Knowledgebase
+      parameters:
+        - in: path
+          name: knowledgebase_id
+          required: true
+          schema:
+            type: number
+        - in: path
+          name: file_id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgebaseFileDeleteResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
   /dataset:
     post:
       summary: Creates a new dataset.
@@ -69,7 +160,6 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
-
   /chat/completions:
     post:
       summary: Call a deployment endpoint with specified tools and messages.
@@ -115,6 +205,55 @@ components:
       scheme: bearer
 
   schemas:
+    KnowledgebaseFileUploadRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+      required:
+        - file
+
+    KnowledgebaseCreateRequest:
+      type: object
+      properties:
+        project_id:
+          type: number
+        tags:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - project_id
+        - name
+        - tags
+    
+    KnowledgebaseFileDeleteResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        id:
+          type: string
+    
+    KnowledgebaseFileUploadResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        id:
+          type: string
+    
+    KnowledgebaseCreateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        id:
+          type: string
+
     DatasetItemCreateResponse:
       type: object
       properties:
