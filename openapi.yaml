@@ -1,23 +1,80 @@
-openapi: 3.0.1
+openapi: 3.0.3
 info:
   title: PropulsionAI API
   description: API for interacting with PropulsionAI models and tools.
-  version: 1.1.0
+  version: 1.0.0
   contact:
-    name: PropulsionAI Support
+    name: PropulsionAI Support Team
+    email: dev-support@propulsionhq.com
 servers:
-  - url: https://api.propulsionhq.com/api/v1
+  - url: https://api.propulsionhq.com/api/v2
     description: PropulsionAI Production Server
+
 tags:
   - name: Chat
-    description: Given a list of messages comprising a conversation, the model will return a response.
+    description: Given a list of messages comprising a conversation, the deployment will return a response.
+  - name: Dataset
+    description: Retrieve and manage datasets.
+
 paths:
-  /chat/completions:
+  /dataset:
     post:
+      summary: Creates a new dataset.
       security:
         - bearerAuth: []
+      tags:
+        - Dataset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatasetCreateRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatasetCreateResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /dataset/item:
+    post:
+      summary: Creates a new item in a dataset.
+      security:
+        - bearerAuth: []
+      tags:
+        - Dataset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DatasetItemCreateRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatasetItemCreateResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+
+  /chat/completions:
+    post:
       summary: Call a deployment endpoint with specified tools and messages.
-      operationId: createChatCompletion
+      security:
+        - bearerAuth: []
       tags:
         - Chat
       requestBody:
@@ -39,7 +96,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ModelRunResponse'
+                $ref: '#/components/schemas/ChatCompletionResponse'
             text/event-stream:
               schema:
                 type: string
@@ -55,9 +112,120 @@ components:
   securitySchemes:
     bearerAuth:
       type: http
-      description: API key generated from PropulsionAI Console
       scheme: bearer
+
   schemas:
+    DatasetItemCreateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        id:
+          type: string
+
+    DatasetItemDataObject:
+      type: object
+      properties:
+        query:
+          type: string
+          nullable: true
+        tools:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ChatCompletionTool'
+        chosen:
+          type: string
+          nullable: true
+        images:
+          type: string
+          nullable: true
+        prompt:
+          type: string
+          nullable: true
+        system:
+          type: string
+          nullable: true
+        history:
+          type: array
+          nullable: true
+          items:
+            type: array
+            items:
+              type: string
+        kto_tag:
+          type: string
+          nullable: true
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequestMessage'
+        rejected:
+          type: string
+          nullable: true
+        response:
+          type: string
+          nullable: true
+        
+    DatasetItemCreateRequest:
+      type: object
+      properties:
+        dataset_id:
+          type: number
+        data:
+          $ref: '#/components/schemas/DatasetItemDataObject'
+      required:
+        - dataset_id
+        - data
+
+    DatasetCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        settings:
+          type: object
+          additionalProperties: true
+        metadata:
+          type: object
+          additionalProperties: true
+      required:
+        - name
+
+    DatasetCreateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        id:
+          type: number
+        dataset:
+          $ref: '#/components/schemas/DatasetCreateResponseObject'
+          
+    DatasetCreateResponseObject:
+      type: object
+      properties:
+        id:
+          type: number
+        project_id:
+          type: number
+        name:
+          type: string
+        description:
+          type: string
+        settings:
+          type: object
+          additionalProperties: true
+        metadata:
+          type: object
+          additionalProperties: true
+        created:
+          type: integer
+        updated:
+          type: integer
+
     ChatRequest:
       type: object
       properties:
@@ -68,7 +236,7 @@ components:
         messages:
           type: array
           items:
-            $ref: '#/components/schemas/Message'
+            $ref: '#/components/schemas/RequestMessage'
         deployment:
           type: string
         stream:
@@ -93,7 +261,8 @@ components:
       required:
         - messages
         - deployment
-    Message:
+
+    RequestMessage:
       type: object
       properties:
         role:
@@ -101,9 +270,20 @@ components:
           enum: [system, user, assistant, tool]
         content:
           type: string
-      required:
-        - role
-        - content
+    
+    ResponseMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [system, user, assistant, tool]
+        content:
+          type: string
+        tool_calls:
+          type: array
+          items:
+            $ref: '#/components/schemas/ToolCall'
+
     ChatCompletionTool:
       type: object
       properties:
@@ -111,11 +291,12 @@ components:
           type: string
           enum: ['function']
         function:
-          $ref: '#/components/schemas/FunctionObject'
+          $ref: '#/components/schemas/FunctionRequestObject'
       required:
         - type
         - function
-    FunctionObject:
+
+    FunctionRequestObject:
       type: object
       properties:
         description:
@@ -128,11 +309,27 @@ components:
           additionalProperties: true
       required:
         - name
+    
+    FunctionResponseObject:
+      type: object
+      properties:
+        description:
+          type: string
+        name:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]{1,64}$
+        arguments:
+          type: object
+          additionalProperties: true
+      required:
+        - name
+
     ChatCompletionToolChoiceOption:
       oneOf:
         - type: string
           enum: [none, auto, required]
         - $ref: '#/components/schemas/ChatCompletionNamedToolChoice'
+
     ChatCompletionNamedToolChoice:
       type: object
       properties:
@@ -140,27 +337,31 @@ components:
           type: string
           enum: ['function']
         function:
-          $ref: '#/components/schemas/FunctionObject'
+          $ref: '#/components/schemas/FunctionRequestObject'
       required:
         - type
         - function
+
     Temperature:
       type: number
       minimum: 0
       maximum: 1
       default: 0.4
+
     TopP:
       type: number
       minimum: 0
       maximum: 1
       default: 0.5
       description: Probability threshold for token selection in text generation, controlling output randomness.
+
     N:
       type: integer
       minimum: 1
       maximum: 128
       default: 1
-    ModelRunResponse:
+
+    ChatCompletionResponse:
       type: object
       properties:
         id:
@@ -171,23 +372,23 @@ components:
           type: integer
         model:
           type: string
+        task_id:
+          type: string
         choices:
           type: array
           items:
             $ref: '#/components/schemas/Choice'
         usage:
           $ref: '#/components/schemas/Usage'
-        tool_calls:
-          type: array
-          items:
-            $ref: '#/components/schemas/ToolCall'
+
     Choice:
       type: object
       properties:
         index:
           type: integer
         message:
-          $ref: '#/components/schemas/Message'
+          $ref: '#/components/schemas/ResponseMessage'
+
     Usage:
       type: object
       properties:
@@ -197,6 +398,7 @@ components:
           type: integer
         total_tokens:
           type: integer
+
     ToolCall:
       type: object
       properties:
@@ -204,6 +406,7 @@ components:
           type: string
           enum: ['function']
         function:
-          $ref: '#/components/schemas/FunctionObject'
+          $ref: '#/components/schemas/FunctionResponseObject'
+
 security:
   - bearerAuth: []
