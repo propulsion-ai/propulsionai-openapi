@@ -57,7 +57,7 @@ paths:
           name: knowledgebase_id
           required: true
           schema:
-            type: number
+            type: integer
       requestBody:
         required: true
         content:
@@ -89,7 +89,7 @@ paths:
           name: knowledgebase_id
           required: true
           schema:
-            type: number
+            type: integer
         - in: path
           name: file_id
           required: true
@@ -249,7 +249,7 @@ components:
         message:
           type: string
         id:
-          type: number
+          type: integer
 
     DatasetItemCreateResponse:
       type: object
@@ -307,7 +307,7 @@ components:
       type: object
       properties:
         dataset_id:
-          type: number
+          type: integer
         data:
           $ref: '#/components/schemas/DatasetItemDataObject'
       required:
@@ -336,7 +336,7 @@ components:
         message:
           type: string
         id:
-          type: number
+          type: integer
         dataset:
           $ref: '#/components/schemas/DatasetCreateResponseObject'
           
@@ -344,9 +344,9 @@ components:
       type: object
       properties:
         id:
-          type: number
+          type: integer
         project_id:
-          type: number
+          type: integer
         name:
           type: string
         description:
