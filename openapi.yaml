@@ -45,7 +45,7 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
-  /knowledgebase/{knowledgebase_id}/file:
+  /knowledgebase/{knowledgebase_code}/file:
     post:
       summary: Uploads a file to a knowledgebase.
       security:
@@ -54,10 +54,10 @@ paths:
         - Knowledgebase
       parameters:
         - in: path
-          name: knowledgebase_id
+          name: knowledgebase_code
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         required: true
         content:
@@ -77,7 +77,39 @@ paths:
           description: Unauthorized
         '500':
           description: Internal Server Error
-  /knowledgebase/{knowledgebase_id}/file/{file_id}:
+  /knowledgebase/{knowledgebase_code}/item:
+    post:
+      summary: Upload content to a knowledgebase.
+      security:
+        - bearerAuth: []
+      tags:
+        - Knowledgebase
+      parameters:
+        - in: path
+          name: knowledgebase_code
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KnowledgebaseItemRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KnowledgebaseItemResponse'
+        '400':
+          description: Bad Request
+        '401':
+          description: Unauthorized
+        '500':
+          description: Internal Server Error
+  /knowledgebase/{knowledgebase_code}/file/{file_id}:
     delete:
       summary: Deletes a file from a knowledgebase.
       security:
@@ -86,10 +118,10 @@ paths:
         - Knowledgebase
       parameters:
         - in: path
-          name: knowledgebase_id
+          name: knowledgebase_code
           required: true
           schema:
-            type: integer
+            type: string
         - in: path
           name: file_id
           required: true
@@ -213,6 +245,22 @@ components:
           format: binary
       required:
         - file
+    
+    KnowledgebaseItemRequest:
+      type: object
+      properties:
+        source:
+          type: string
+          description: You should use this field to specify the source of the content like url, filename, etc. This will be used for citation purposes.
+        metadata:
+          type: object
+          description: You can use this field to specify any metadata associated with the content.
+        content:
+          type: string
+          description: The content that you want to upload to the knowledgebase.
+      required:
+        - source
+        - content
 
     KnowledgebaseCreateRequest:
       type: object
@@ -243,13 +291,21 @@ components:
         id:
           type: string
     
-    KnowledgebaseCreateResponse:
+    KnowledgebaseItemResponse:
       type: object
       properties:
         message:
           type: string
         id:
-          type: integer
+          type: string
+    
+    KnowledgebaseCreateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: string
 
     DatasetItemCreateResponse:
       type: object
