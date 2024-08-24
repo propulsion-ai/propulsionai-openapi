@@ -461,7 +461,25 @@ components:
           type: string
           enum: [system, user, assistant, tool]
         content:
-          type: string
+          oneOf:
+            - type: string
+            - type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum: [text, image_url]
+                  text:
+                    type: string
+                  image_url:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                        format: uri
+              required:
+                - type
     
     ResponseMessage:
       type: object
